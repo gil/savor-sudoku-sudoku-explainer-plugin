@@ -1,6 +1,6 @@
 {
   "name": "savor-sudoku-sudoku-explainer-plugin",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "SudokuExplainer as a Savor Sudoku engine plugin",
   "license": "LGPL-2.1-or-later",
   "type": "module",
