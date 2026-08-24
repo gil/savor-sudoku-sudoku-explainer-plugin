@@ -14,6 +14,7 @@ import type {
   HintCandidateHighlight,
   HintCellHighlight,
   HintHouseHighlight,
+  HintLink,
   HintPlacement,
   HintResult,
   RateResult,
@@ -91,12 +92,24 @@ function toHighlights(hint: Hint): HintResult["highlights"] {
     color: "yellow" as const,
   }));
 
-  // highlights.links (arrows between candidates) has no wire representation and
-  // the built-in engine does not draw them either.
+  // A CandidateRef with value 0 means the whole cell, which is how the Unique
+  // Rectangle hints draw their four corners. The host reads digit 0 the same
+  // way, so it passes straight through.
+  //
+  // `strong` is absent for every rule that reasons without on/off states, which
+  // is everything outside the chaining family. Omitting it says so; the host
+  // draws an unsaid link like a strong one.
+  const links: HintLink[] = (h.links ?? []).map((l) => ({
+    from: { cell: l.from.index, digit: l.from.value },
+    to: { cell: l.to.index, digit: l.to.value },
+    ...(l.strong === undefined ? {} : { strong: l.strong }),
+  }));
+
   return {
     ...(cells.length === 0 ? {} : { cells }),
     ...(candidates.length === 0 ? {} : { candidates }),
     ...(houses.length === 0 ? {} : { houses }),
+    ...(links.length === 0 ? {} : { links }),
   };
 }
 

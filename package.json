@@ -1,6 +1,6 @@
 {
   "name": "savor-sudoku-sudoku-explainer-plugin",
-  "version": "0.1.4",
+  "version": "0.1.5",
   "description": "SudokuExplainer as a Savor Sudoku engine plugin",
   "license": "LGPL-2.1-or-later",
   "type": "module",
@@ -14,8 +14,8 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "savor-sudoku-plugin-api": "github:gil/savor-sudoku-plugin-api#3ea63f003f6d42e4f21be1b84199f2f074fee691",
-    "sudoku-explainer": "github:gil/SudokuExplainer-ts#dc4ee006db998beb872a5ea5da53e45cd98bad85"
+    "savor-sudoku-plugin-api": "github:gil/savor-sudoku-plugin-api#cc3b2b5d621d77b88a1fa44f4399bc296ad81446",
+    "sudoku-explainer": "github:gil/SudokuExplainer-ts#4aa457e0349d81a2e271cf8b1ea33a86a6327587"
   },
   "devDependencies": {
     "tsdown": "^0.15.6",
