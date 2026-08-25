@@ -52,15 +52,65 @@ export const PAGES: Readonly<Record<string, string>> = {
   NestedForcingChain: "Forcing_Net",
 };
 
+/**
+ * Hint penalty tier per technique, charged as tier*10 seconds (5 for tier 0).
+ *
+ * The scale is the built-in engine's, so a technique costs the same whichever
+ * engine found it: X-Wing 2, Swordfish 3, Jellyfish 4, XY- and XYZ-Wing 3,
+ * WXYZ-Wing 5, BUG 2, all matching their built-in counterparts. SE's own enum
+ * order already runs easiest to hardest, so the tiers climb with it; the
+ * forcing chains and nets at the end are the expensive ones.
+ */
+export const TIERS: Readonly<Record<string, number>> = {
+  HiddenSingle: 1,
+  DirectPointing: 1,
+  DirectHiddenPair: 2,
+  NakedSingle: 1,
+  DirectHiddenTriplet: 3,
+  PointingClaiming: 1,
+  NakedPair: 1,
+  XWing: 2,
+  HiddenPair: 2,
+  NakedTriplet: 2,
+  Swordfish: 3,
+  HiddenTriplet: 3,
+  TurbotFish: 2,
+  XYWing: 3,
+  XYZWing: 3,
+  WXYZWing: 5,
+  UniqueLoop: 3,
+  NakedQuad: 3,
+  Jellyfish: 4,
+  HiddenQuad: 4,
+  ThreeStrongLinks: 3,
+  VWXYZWing: 5,
+  BivalueUniversalGrave: 2,
+  FourStrongLinks: 4,
+  AlignedPairExclusion: 4,
+  FiveStrongLinks: 5,
+  SixStrongLinks: 5,
+  UVWXYZWing: 5,
+  ForcingChainCycle: 5,
+  TUVWXYZWing: 6,
+  AlignedTripletExclusion: 5,
+  NishioForcingChain: 5,
+  MultipleForcingChain: 6,
+  DynamicForcingChain: 6,
+  DynamicForcingChainPlus: 6,
+  NestedForcingChain: 6,
+};
+
 const ENTRIES = Object.entries(SolvingTechnique) as [string, string][];
 
 export const TECHNIQUES: readonly EngineTechnique[] = ENTRIES.map(
   ([id, name]) => {
     const page = PAGES[id];
+    const penalty = TIERS[id];
     return {
       id,
       name,
       ...(page === undefined ? {} : { url: `${BASE}/${page}` }),
+      ...(penalty === undefined ? {} : { penalty }),
     };
   },
 );
