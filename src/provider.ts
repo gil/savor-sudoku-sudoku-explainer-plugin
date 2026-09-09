@@ -20,21 +20,38 @@ import type {
   RateResult,
 } from "savor-sudoku-plugin-api";
 import { CATALOG } from "./catalog.js";
+import {
+  difficultyLabel,
+  isLocale,
+  techniqueName,
+  type Locale,
+} from "./i18n.js";
 import { withPalette } from "./explanation.js";
 import { ID_BY_NAME, TECHNIQUES } from "./techniques.js";
 import { PLUGIN_VERSION } from "./version.js";
 
 export const ENGINE_ID = "sudoku-explainer";
 
-const MANIFEST: EngineManifest = {
-  id: ENGINE_ID,
-  name: "SudokuExplainer",
-  version: PLUGIN_VERSION,
-  license: "LGPL-2.1-or-later",
-  capabilities: ["generate", "rate", "hint"],
-  difficulties: CATALOG,
-  techniques: TECHNIQUES,
-};
+// Built per call rather than held as a constant: the host names the locale in
+// the handshake, and this worker has no other way to learn it. The engine's own
+// name is a proper noun and stays put in every language.
+function manifestFor(locale: Locale): EngineManifest {
+  return {
+    id: ENGINE_ID,
+    name: "SudokuExplainer",
+    version: PLUGIN_VERSION,
+    license: "LGPL-2.1-or-later",
+    capabilities: ["generate", "rate", "hint"],
+    difficulties: CATALOG.map((d) => ({
+      ...d,
+      label: difficultyLabel(locale, d.id, d.label),
+    })),
+    techniques: TECHNIQUES.map((t) => ({
+      ...t,
+      name: techniqueName(locale, t.id, t.name),
+    })),
+  };
+}
 
 function toGivens(cells: ArrayLike<number>): string {
   if (cells.length !== 81) {
@@ -124,7 +141,8 @@ function toEliminations(hint: Hint): HintPlacement[] {
 }
 
 export const explainerProvider: EngineProvider = {
-  manifest: () => MANIFEST,
+  manifest: (req) =>
+    manifestFor(isLocale(req?.locale) ? req.locale : "en"),
 
   generate: ({ difficultyId, seed }): GenerateResult => {
     if (!CATALOG.some((d) => d.id === difficultyId)) {
