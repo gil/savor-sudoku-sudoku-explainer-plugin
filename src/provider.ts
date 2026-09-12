@@ -20,6 +20,7 @@ import type {
   RateResult,
 } from "savor-sudoku-plugin-api";
 import { CATALOG } from "./catalog.js";
+import { windowFor } from "./windows.js";
 import {
   difficultyLabel,
   isLocale,
@@ -144,14 +145,19 @@ export const explainerProvider: EngineProvider = {
   manifest: (req) =>
     manifestFor(isLocale(req?.locale) ? req.locale : "en"),
 
-  generate: ({ difficultyId, seed }): GenerateResult => {
+  generate: ({ difficultyId, seed, tier }): GenerateResult => {
     if (!CATALOG.some((d) => d.id === difficultyId)) {
       throw new Error(`unknown difficulty "${difficultyId}"`);
     }
+    // Upstream takes an ER window as an alternative to a level name, so aiming
+    // inside a level costs nothing but the narrower search. A level and rung
+    // with no window generates the whole level, which is the same targeted
+    // generator a direct request for that level has always used.
+    const aimed = windowFor(difficultyId, tier);
     // shouldCancel / onProgress stay inside the worker. The solution the engine
     // also returns is discarded: the host derives it with its own solver.
     const result = explainerGenerate({
-      difficulty: difficultyId as DifficultyLevel,
+      difficulty: aimed ?? (difficultyId as DifficultyLevel),
       seed,
     });
     if (!result) {
